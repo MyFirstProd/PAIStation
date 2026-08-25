@@ -10,7 +10,7 @@ PAIStation is an attempt to build one dependable personal agent that can:
 - use files, terminals, browsers, and desktop applications;
 - perceive the physical world through cameras and microphones, and control a safe robotic body;
 - communicate naturally by text and voice;
-- switch between cloud and local models without locking the user into one provider;
+- run local models by default, with optional external API adapters that never activate silently;
 - preserve private, dated snapshots of a person's memories, language, values, and decision style.
 
 This is not a chatbot with hundreds of loosely connected tools. It is a supervised agent runtime with explicit permissions, verifiable execution, durable memory, and replaceable intelligence backends.
@@ -80,19 +80,21 @@ No model receives direct, unrestricted access to the machine. The permission bro
 
 ## Codex, Claude, and local models
 
-PAIStation does not try to reproduce frontier agent intelligence inside a small local model. Instead, it provides a stable control plane and connects specialized backends through official interfaces.
+PAIStation separates the agent harness from the inference provider. The first production target is a single owner on one Windows workstation, fully usable with local models and no network. External APIs are optional BYOK adapters in a separate, explicit data-egress zone.
+
+The first local professional path under evaluation is the open Codex App Server harness connected to LM Studio. This can provide threads, resumable turns, approvals, event streaming, and tool orchestration locally; actual planning quality still depends on the selected local model and must pass PAIStation's own evals.
 
 ### Codex adapter
 
-- Rich product integration through the [Codex App Server](https://learn.chatgpt.com/docs/app-server).
+- Rich product integration through the [Codex App Server](https://learn.chatgpt.com/docs/app-server), including a local LM Studio provider path.
 - Programmatic coding tasks through the [Codex SDK](https://learn.chatgpt.com/docs/codex-sdk).
 - Reuses Codex concepts such as threads, streamed events, approvals, sandboxing, and resumable work.
 
 ### Claude adapter
 
-- Local or self-hosted agent execution through the official Claude Agent SDK.
-- Optional hosted sessions through Claude Managed Agents.
-- Direct Messages API mode for applications that need to own the tool loop.
+- Optional BYOK agent execution through the official Claude Agent SDK.
+- Anthropic API credentials are never required for the local core product.
+- Managed Agents and direct Messages API integrations are later opt-in cloud adapters, not automatic fallbacks.
 
 ### Local adapter
 
@@ -106,9 +108,9 @@ Provider integrations must use supported authentication flows. PAIStation will n
 
 The default interface should offer three choices, not a wall of model IDs:
 
-1. **Auto** — route by task, privacy, required tools, latency, quality, and configured budget.
-2. **Local only** — never send task content outside the machine.
-3. **Choose backend** — pin a specific Codex, Claude, OpenAI API, or local backend to the current thread.
+1. **Auto local** — choose only among locally installed, eval-qualified backend/model pairs.
+2. **Choose local** — pin a specific local agent engine and model.
+3. **External API** — a separate opt-in zone for BYOK providers with an explicit egress preview.
 
 An advanced panel can expose individual models and reasoning settings.
 
@@ -222,7 +224,7 @@ The stack is intentionally modular. Provider models, speech engines, vector sear
 
 ## Production principles
 
-- Local-first does not mean local-only.
+- Local is the default and must work offline; every external API is an explicit opt-in capability.
 - Structured tools are preferred over visual clicking.
 - Fast deterministic perception is preferred over sending every camera frame to a model.
 - Every consequential action is attributable and reviewable.
@@ -245,7 +247,7 @@ Complete a repository task end to end: understand the request, inspect files, ed
 
 ### 2. Backend adapters and model picker
 
-Connect Codex, Claude, and one local OpenAI-compatible runtime behind a shared task contract. Add explicit privacy boundaries and fallback rules.
+Qualify Codex App Server with LM Studio as the first local professional path, then add optional Claude and other API adapters behind explicit privacy boundaries.
 
 ### 3. Browser, desktop, voice, and embodiment
 
@@ -255,9 +257,13 @@ Add computer use incrementally, beginning with structured browser and accessibil
 
 Create the first immutable, source-backed personality snapshot and a regression suite for biographical fidelity, values, style, uncertainty, and non-fabrication.
 
+## First production target
+
+Version 1 is deliberately owner-first and single-user. It is being designed and evaluated on one real Windows workstation before the project attempts multi-user accounts, hosted billing, family administration, or enterprise features. This keeps the first release focused on one measurable outcome: a fully offline repository task that can edit safely, verify its work, show evidence, and resume after a restart.
+
 ## What is public today
 
-For now, this repository contains the idea and architecture only. Source code will be published selectively after the core permission model and private-data boundaries are ready for external review.
+For now, this repository contains the idea and architecture only. The long-term decision is to open the complete project rather than keep an open-core split. The current private implementation will be published only after a Git-history secret and personal-data audit, dependency/license review, reproducible clean install, safe defaults, and a public threat model.
 
 If this direction resonates with you, star the repository and open a discussion describing the one workflow you would trust a personal agent to handle every day.
 
