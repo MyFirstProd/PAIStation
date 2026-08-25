@@ -8,6 +8,7 @@ PAIStation is an attempt to build one dependable personal agent that can:
 
 - work on real software projects with the discipline of modern coding agents;
 - use files, terminals, browsers, and desktop applications;
+- perceive the physical world through cameras and microphones, and control a safe robotic body;
 - communicate naturally by text and voice;
 - switch between cloud and local models without locking the user into one provider;
 - preserve private, dated snapshots of a person's memories, language, values, and decision style.
@@ -38,6 +39,10 @@ Dated reconstructions of the owner, built from source-backed memories, recording
 
 These modes may share infrastructure, but they never share identity implicitly.
 
+### Embodied Agent
+
+A physical presence that can see, hear, orient itself, and eventually move through the world. The private prototype already includes a USB camera, microphone, an Arduino-controlled two-axis pan/tilt mount, and face-tracking software. The same contracts are designed to grow toward depth sensors, a mobile base, manipulators, and other robot hardware without coupling the agent to one device.
+
 ## Architecture
 
 ```mermaid
@@ -52,9 +57,14 @@ flowchart TD
     ORCH --> LOCAL[Local Model Backend]
     ORCH --> TOOLS[Typed Tool Runtime]
 
+    SENSORS[Camera / Microphone / Future Sensors] --> PERCEPTION[Perception Runtime]
+    PERCEPTION --> ORCH
+
     TOOLS --> FS[Files / Shell / Git]
     TOOLS --> WEB[Browser / MCP / APIs]
     TOOLS --> PC[Desktop Computer Use]
+    TOOLS --> HWSAFE[Hardware Safety Runtime]
+    HWSAFE --> BODY[Pan/Tilt / Future Robot]
 
     ORCH --> VERIFY[Result Verification]
     VERIFY --> EVENTS[Event Log & Artifacts]
@@ -140,6 +150,27 @@ PAIStation follows a reliability hierarchy:
 
 GUI control is powerful but probabilistic. Sensitive actions require previews and explicit confirmation. On Windows, foreground computer use must also make it obvious when the agent owns the keyboard and pointer, and offer an immediate stop control.
 
+## Embodied intelligence
+
+PAIStation treats cameras, microphones, motors, and future robot hardware as first-class capabilities rather than ad-hoc tools.
+
+Perception is split into two speeds:
+
+- **Fast perception** runs continuously with conventional vision and signal processing for tracking, motion, safety zones, and low-latency reactions.
+- **Semantic perception** sends selected frames or events to a vision-language model when the agent needs to understand objects, scenes, text, people, or a developing situation.
+
+Continuous video is not continuously streamed into an LLM. A deterministic perception runtime decides when a meaningful event or representative frame should enter model context.
+
+The embodiment layer is defined by three stable interfaces:
+
+- `PerceptionProvider` produces timestamped observations with provenance and confidence;
+- `ActuatorProvider` exposes semantic actions such as orient, follow, stop, move, or grasp;
+- `SafetyController` enforces physical limits independently of model output.
+
+The current pan/tilt station is therefore the first robot head, not a disposable demo. Future devices can be added as adapters. ROS 2 can become a bridge when the hardware grows complex enough, without making it a dependency of the initial desktop agent.
+
+Physical safety remains below the model: calibrated limits, acceleration caps, watchdogs, collision and workspace constraints, manual takeover, and an emergency stop cannot be overridden by a prompt.
+
 ## Voice
 
 Voice is an interface to the same task runtime, not a separate assistant.
@@ -180,6 +211,8 @@ Fine-tuning or lightweight adapters may improve style later, but identity remain
 | Browser | Playwright, isolated browser profiles |
 | Windows automation | UI Automation first, visual computer use as fallback |
 | Voice | VAD, faster-whisper or Qwen ASR, pluggable TTS |
+| Perception | OpenCV fast path, event-triggered vision-language models |
+| Embodiment | Typed sensor/actuator contracts, Arduino serial today, optional ROS 2 bridge later |
 | Memory | SQLite, full-text search, sqlite-vec, immutable source archive |
 | Security | OS sandboxing, capability grants, secret redaction, audit log |
 | Observability | Structured events, traces, replayable task runs |
@@ -191,11 +224,13 @@ The stack is intentionally modular. Provider models, speech engines, vector sear
 
 - Local-first does not mean local-only.
 - Structured tools are preferred over visual clicking.
+- Fast deterministic perception is preferred over sending every camera frame to a model.
 - Every consequential action is attributable and reviewable.
 - Verification is part of execution, not an optional final step.
 - Personal memories need provenance, confidence, consent, and deletion controls.
 - A companion and a reconstruction of the owner are different identities.
 - No autonomous learning from the agent's own unreviewed output.
+- Physical safety constraints live below the model and cannot be prompt-overridden.
 - Exportability matters: a digital legacy must survive any single model provider.
 
 ## Initial roadmap
@@ -212,9 +247,9 @@ Complete a repository task end to end: understand the request, inspect files, ed
 
 Connect Codex, Claude, and one local OpenAI-compatible runtime behind a shared task contract. Add explicit privacy boundaries and fallback rules.
 
-### 3. Browser, desktop, and voice
+### 3. Browser, desktop, voice, and embodiment
 
-Add computer use incrementally, beginning with structured browser and accessibility control. Add a push-to-talk voice surface to the same sessions.
+Add computer use incrementally, beginning with structured browser and accessibility control. Add a push-to-talk voice surface to the same sessions. Connect the existing camera, microphone, and pan/tilt prototype through stable perception, actuator, and safety contracts.
 
 ### 4. Time Capsule v1
 
