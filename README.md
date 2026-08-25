@@ -53,7 +53,7 @@ flowchart TD
     POLICY --> ORCH[Agent Orchestrator]
 
     ORCH --> CODEX[Codex Backend]
-    ORCH --> CLAUDE[Claude Backend]
+    ORCH --> CLAUDE[Optional Claude API Backend]
     ORCH --> LOCAL[Local Model Backend]
     ORCH --> TOOLS[Typed Tool Runtime]
 
@@ -117,10 +117,11 @@ An advanced panel can expose individual models and reasoning settings.
 Every backend publishes a capability manifest:
 
 ```yaml
-id: codex-local
+id: codex-lmstudio
 kind: agent
+provider: lmstudio
 capabilities: [coding, shell, git, vision, long_running]
-privacy: cloud
+privacy: local
 supports:
   streaming: true
   resume: true
@@ -137,9 +138,9 @@ Before a task starts, the UI should make five things visible:
 - local or cloud processing;
 - tools and data sources being granted;
 - expected approval behavior;
-- fallback order if the preferred backend fails.
+- local fallback order; external API is never an implicit fallback.
 
-The user can pin a backend per thread. Automatic fallback must never cross a privacy boundary silently.
+The user can pin a backend per thread. External API fallback is disabled by default and must never cross a privacy boundary silently.
 
 ## Computer use
 
@@ -208,7 +209,7 @@ Fine-tuning or lightweight adapters may improve style later, but identity remain
 | Local API | FastAPI, WebSocket / JSON-RPC |
 | Desktop shell | Tauri 2, React, TypeScript |
 | Coding backend | Codex App Server and Codex SDK |
-| Claude backend | Claude Agent SDK / Messages API / Managed Agents |
+| Optional Claude backend | Claude Agent SDK / Messages API / Managed Agents, BYOK only |
 | Local inference | LM Studio and other OpenAI-compatible runtimes |
 | Browser | Playwright, isolated browser profiles |
 | Windows automation | UI Automation first, visual computer use as fallback |
