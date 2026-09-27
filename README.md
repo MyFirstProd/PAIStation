@@ -1,273 +1,132 @@
 # PAIStation
 
-**A local-first operating system for professional AI agents, computer control, voice, and versioned digital selves.**
+**Local-first embodied memory and a research interface for interchangeable cognitive backends.**
 
-> **Status:** public concept and architecture draft. The implementation is still private while the security boundary, provider integrations, and data model are being validated.
+Камера, слух, безопасное тело и память, которая переживает смену модели.
 
-PAIStation is an attempt to build one dependable personal agent that can:
+> **Direction reset: 2026-09-27.** This public repository contains a design and
+> research roadmap, not a production release. Computer control is parked.
+> The next target is a measured 24-hour embodied-memory demonstration.
 
-- work on real software projects with the discipline of modern coding agents;
-- use files, terminals, browsers, and desktop applications;
-- perceive the physical world through cameras and microphones, and control a safe robotic body;
-- communicate naturally by text and voice;
-- run local models by default, with optional external API adapters that never activate silently;
-- preserve private, dated snapshots of a person's memories, language, values, and decision style.
+## The idea
 
-This is not a chatbot with hundreds of loosely connected tools. It is a supervised agent runtime with explicit permissions, verifiable execution, durable memory, and replaceable intelligence backends.
+Build a system that can observe an explicitly permitted environment, keep a
+source-backed history, recall what happened, and act through a bounded body.
+Its base model should be replaceable without discarding that history.
 
-## Why this project
+The owner proposed extending this into **Mind ABI**: a shared experimental
+boundary for an LLM, a neural simulation, or a hybrid controller to interact
+with memory and a body. The name is an architectural metaphor: v0 is a
+versioned message protocol, **not** a binary ABI, consciousness format, or
+claim that arbitrary brains can be plugged in unchanged.
 
-Today's strongest assistants are split across separate products. Coding agents understand repositories but are not a persistent personal presence. Voice assistants are easy to talk to but weak at long-running work. Computer-use agents can click through interfaces but are difficult to trust. Memory features usually flatten a changing person into one continuously overwritten profile.
+The useful research question is concrete: *what changes when different
+controllers receive the same observations and act in the same environment?*
+This is a hypothesis to test, not a proven breakthrough or priority claim.
 
-PAIStation brings these capabilities under one user-owned control plane.
+## Three cores, one optional research lane
 
-The long-term experiment is inspired by the Ship of Theseus: instead of creating one synthetic personality that constantly rewrites itself, PAIStation preserves immutable snapshots. A future user should be able to speak with a transparent reconstruction of their 2026, 2036, or 2056 self without later beliefs silently replacing earlier ones.
-
-## Product modes
-
-### Operator
-
-A professional work agent for repositories, research, documents, browser workflows, and desktop tasks. Every run has a goal, scope, permission budget, success criteria, and evidence of completion.
-
-### Companion
-
-A private conversational presence with its own identity and relationship history. It can know the owner deeply without pretending to be the owner.
-
-### Time Capsules
-
-Dated reconstructions of the owner, built from source-backed memories, recordings, writing, decisions, and explicit self-descriptions. A Time Capsule always discloses that it is a reconstruction and never invents unsupported biography.
-
-These modes may share infrastructure, but they never share identity implicitly.
-
-### Embodied Agent
-
-A physical presence that can see, hear, orient itself, and eventually move through the world. The private prototype already includes a USB camera, microphone, an Arduino-controlled two-axis pan/tilt mount, and face-tracking software. The same contracts are designed to grow toward depth sensors, a mobile base, manipulators, and other robot hardware without coupling the agent to one device.
-
-## Architecture
+| Core | Role |
+|---|---|
+| Body | Camera, microphone, voice and a safely bounded two-axis head |
+| Memory | Timestamped events, episodes, evidence-backed facts and corrections |
+| Identity and cognition | Explicit identity, replaceable inference, versioned state and later curated personalization |
+| Fly Lab (optional) | Small, isolated sensorimotor experiments using fly-inspired or connectome-constrained models |
 
 ```mermaid
 flowchart TD
-    UI[Desktop / Web / Voice] --> SESSION[Session & Task Manager]
-    SESSION --> MODE[Identity and Privacy Mode]
-    MODE --> POLICY[Permission Broker]
-    POLICY --> ORCH[Agent Orchestrator]
-
-    ORCH --> CODEX[Codex Backend]
-    ORCH --> CLAUDE[Optional Claude API Backend]
-    ORCH --> LOCAL[Local Model Backend]
-    ORCH --> TOOLS[Typed Tool Runtime]
-
-    SENSORS[Camera / Microphone / Future Sensors] --> PERCEPTION[Perception Runtime]
-    PERCEPTION --> ORCH
-
-    TOOLS --> FS[Files / Shell / Git]
-    TOOLS --> WEB[Browser / MCP / APIs]
-    TOOLS --> PC[Desktop Computer Use]
-    TOOLS --> HWSAFE[Hardware Safety Runtime]
-    HWSAFE --> BODY[Pan/Tilt / Future Robot]
-
-    ORCH --> VERIFY[Result Verification]
-    VERIFY --> EVENTS[Event Log & Artifacts]
-    EVENTS --> MEMORY[Memory Curator]
-    MEMORY --> SNAPSHOTS[Versioned Personal Snapshots]
+    S[Consented sensors] --> P[Perception and timestamped events]
+    P --> M[Source archive / episodes / facts]
+    P --> ABI[Mind ABI host]
+    M --> R[Bounded evidence retrieval]
+    R --> ABI
+    I[Identity and continuity log] --> ABI
+    ABI <--> C[LLM / neural simulation / hybrid adapter]
+    ABI --> A[Action proposal]
+    A --> SAFE[Independent safety controller]
+    SAFE --> B[Body / voice]
+    B --> S
 ```
 
-### The important boundary
-
-Models propose actions. Deterministic code validates and executes them.
-
-No model receives direct, unrestricted access to the machine. The permission broker decides whether an action is read-only, reversible, external, or destructive. Untrusted content from websites, email, documents, and screenshots is treated as data and cannot grant itself more authority.
-
-## Codex, Claude, and local models
-
-PAIStation separates the agent harness from the inference provider. The first production target is a single owner on one Windows workstation, fully usable with local models and no network. External APIs are optional BYOK adapters in a separate, explicit data-egress zone.
-
-The first local professional path under evaluation is the open Codex App Server harness connected to LM Studio. This can provide threads, resumable turns, approvals, event streaming, and tool orchestration locally; actual planning quality still depends on the selected local model and must pass PAIStation's own evals.
-
-### Codex adapter
-
-- Rich product integration through the [Codex App Server](https://learn.chatgpt.com/docs/app-server), including a local LM Studio provider path.
-- Programmatic coding tasks through the [Codex SDK](https://learn.chatgpt.com/docs/codex-sdk).
-- Reuses Codex concepts such as threads, streamed events, approvals, sandboxing, and resumable work.
-
-### Claude adapter
-
-- Optional BYOK agent execution through the official Claude Agent SDK.
-- Anthropic API credentials are never required for the local core product.
-- Managed Agents and direct Messages API integrations are later opt-in cloud adapters, not automatic fallbacks.
-
-### Local adapter
-
-- OpenAI-compatible endpoints such as LM Studio, vLLM, or llama.cpp servers.
-- Local inference for sensitive memory, offline conversations, embeddings, routing, and low-cost tasks.
-- Model loading and VRAM budgeting are handled by a dedicated model manager.
-
-Provider integrations must use supported authentication flows. PAIStation will not proxy, scrape, or bypass consumer product access. Users connect their own accounts, API credentials, or local runtimes where required.
-
-## Model selection without provider chaos
-
-The default interface should offer three choices, not a wall of model IDs:
-
-1. **Auto local** — choose only among locally installed, eval-qualified backend/model pairs.
-2. **Choose local** — pin a specific local agent engine and model.
-3. **External API** — a separate opt-in zone for BYOK providers with an explicit egress preview.
-
-An advanced panel can expose individual models and reasoning settings.
-
-Every backend publishes a capability manifest:
-
-```yaml
-id: codex-lmstudio
-kind: agent
-provider: lmstudio
-capabilities: [coding, shell, git, vision, long_running]
-privacy: local
-supports:
-  streaming: true
-  resume: true
-  approvals: true
-  sandbox: true
-limits:
-  context: provider_managed
-  parallel_runs: configurable
-```
-
-Before a task starts, the UI should make five things visible:
-
-- selected backend and model;
-- local or cloud processing;
-- tools and data sources being granted;
-- expected approval behavior;
-- local fallback order; external API is never an implicit fallback.
-
-The user can pin a backend per thread. External API fallback is disabled by default and must never cross a privacy boundary silently.
-
-## Computer use
-
-PAIStation follows a reliability hierarchy:
-
-1. structured API or MCP integration;
-2. filesystem, shell, or application CLI;
-3. browser DOM and accessibility APIs;
-4. screenshot-driven mouse and keyboard control as the final fallback.
-
-GUI control is powerful but probabilistic. Sensitive actions require previews and explicit confirmation. On Windows, foreground computer use must also make it obvious when the agent owns the keyboard and pointer, and offer an immediate stop control.
-
-## Embodied intelligence
-
-PAIStation treats cameras, microphones, motors, and future robot hardware as first-class capabilities rather than ad-hoc tools.
-
-Perception is split into two speeds:
-
-- **Fast perception** runs continuously with conventional vision and signal processing for tracking, motion, safety zones, and low-latency reactions.
-- **Semantic perception** sends selected frames or events to a vision-language model when the agent needs to understand objects, scenes, text, people, or a developing situation.
-
-Continuous video is not continuously streamed into an LLM. A deterministic perception runtime decides when a meaningful event or representative frame should enter model context.
-
-The embodiment layer is defined by three stable interfaces:
-
-- `PerceptionProvider` produces timestamped observations with provenance and confidence;
-- `ActuatorProvider` exposes semantic actions such as orient, follow, stop, move, or grasp;
-- `SafetyController` enforces physical limits independently of model output.
-
-The current pan/tilt station is therefore the first robot head, not a disposable demo. Future devices can be added as adapters. ROS 2 can become a bridge when the hardware grows complex enough, without making it a dependency of the initial desktop agent.
-
-Physical safety remains below the model: calibrated limits, acceleration caps, watchdogs, collision and workspace constraints, manual takeover, and an emergency stop cannot be overridden by a prompt.
-
-## Voice
-
-Voice is an interface to the same task runtime, not a separate assistant.
-
-The first production voice loop is deliberately simple:
-
-`push-to-talk / VAD -> ASR -> task runtime -> streamed text -> TTS`
-
-Natural interruption, echo cancellation, full duplex, and voice cloning come later. Transcripts and audio have independent retention controls. A cloned voice is never evidence that a generated statement was actually spoken by the person.
-
-## Versioned digital selves
-
-Continuous self-training is not the foundation. Raw life data is append-only, generated answers never become ground truth, and each snapshot has a cutoff date.
-
-A snapshot contains:
-
-- source-backed episodic and semantic memories;
-- values, preferences, beliefs, and uncertainty;
-- writing and speech style references;
-- important decisions and the reasoning behind them;
-- a voice model reference, when consent and data quality allow it;
-- model, prompt, retrieval index, adapter, and evaluation versions;
-- provenance and confidence for every claim;
-- access, inheritance, deletion, and export policy.
-
-Fine-tuning or lightweight adapters may improve style later, but identity remains portable outside model weights.
-
-## Planned stack
-
-| Layer | Planned technology |
-|---|---|
-| Agent runtime | Python 3.11+, asyncio, Pydantic |
-| Local API | FastAPI, WebSocket / JSON-RPC |
-| Desktop shell | Tauri 2, React, TypeScript |
-| Coding backend | Codex App Server and Codex SDK |
-| Optional Claude backend | Claude Agent SDK / Messages API / Managed Agents, BYOK only |
-| Local inference | LM Studio and other OpenAI-compatible runtimes |
-| Browser | Playwright, isolated browser profiles |
-| Windows automation | UI Automation first, visual computer use as fallback |
-| Voice | VAD, faster-whisper or Qwen ASR, pluggable TTS |
-| Perception | OpenCV fast path, event-triggered vision-language models |
-| Embodiment | Typed sensor/actuator contracts, Arduino serial today, optional ROS 2 bridge later |
-| Memory | SQLite, full-text search, sqlite-vec, immutable source archive |
-| Security | OS sandboxing, capability grants, secret redaction, audit log |
-| Observability | Structured events, traces, replayable task runs |
-| Quality | pytest, scenario evals, browser replay, hardware-in-the-loop where applicable |
-
-The stack is intentionally modular. Provider models, speech engines, vector search, and UI surfaces can change without rewriting the permission system or personal archive.
-
-## Production principles
-
-- Local is the default and must work offline; every external API is an explicit opt-in capability.
-- Structured tools are preferred over visual clicking.
-- Fast deterministic perception is preferred over sending every camera frame to a model.
-- Every consequential action is attributable and reviewable.
-- Verification is part of execution, not an optional final step.
-- Personal memories need provenance, confidence, consent, and deletion controls.
-- A companion and a reconstruction of the owner are different identities.
-- No autonomous learning from the agent's own unreviewed output.
-- Physical safety constraints live below the model and cannot be prompt-overridden.
-- Exportability matters: a digital legacy must survive any single model provider.
-
-## Initial roadmap
-
-### 0. Public architecture and snapshot protocol
-
-Publish design decisions, threat model, provider contracts, and the first personal-snapshot schema. Begin collecting a private baseline snapshot while the software is still being built.
-
-### 1. One production vertical slice
-
-Complete a repository task end to end: understand the request, inspect files, edit safely, run verification, present a diff, and resume after interruption.
-
-### 2. Backend adapters and model picker
-
-Qualify Codex App Server with LM Studio as the first local professional path, then add optional Claude and other API adapters behind explicit privacy boundaries.
-
-### 3. Browser, desktop, voice, and embodiment
-
-Add computer use incrementally, beginning with structured browser and accessibility control. Add a push-to-talk voice surface to the same sessions. Connect the existing camera, microphone, and pan/tilt prototype through stable perception, actuator, and safety contracts.
-
-### 4. Time Capsule v1
-
-Create the first immutable, source-backed personality snapshot and a regression suite for biographical fidelity, values, style, uncertainty, and non-fabrication.
-
-## First production target
-
-Version 1 is deliberately owner-first and single-user. It is being designed and evaluated on one real Windows workstation before the project attempts multi-user accounts, hosted billing, family administration, or enterprise features. This keeps the first release focused on one measurable outcome: a fully offline repository task that can edit safely, verify its work, show evidence, and resume after a restart.
-
-## What is public today
-
-For now, this repository contains the idea and architecture only. The long-term decision is to open the complete project rather than keep an open-core split. The current private implementation will be published only after a Git-history secret and personal-data audit, dependency/license review, reproducible clean install, safe defaults, and a public threat model.
-
-If this direction resonates with you, star the repository and open a discussion describing the one workflow you would trust a personal agent to handle every day.
-
-## Independence
-
-PAIStation is an independent project and is not affiliated with or endorsed by OpenAI or Anthropic. Product and company names are used only to describe optional integrations.
+The fast control loop does not wait for an LLM. Models propose actions; a
+separate controller enforces freshness, calibrated limits, watchdogs and STOP.
+No experimental backend receives direct motor, shell or private-archive access.
+
+## Keep these concepts separate
+
+- **Identity:** whose instance this is, its role, declared traits and representation limits.
+- **Memory:** evidence and its derived, correctable interpretations.
+- **Cognitive state:** backend-specific transient state or checkpoint.
+- **Model/connectome:** a versioned processing mechanism, not a biography.
+- **Embodiment:** sensor and actuator capabilities and their calibrated constraints.
+- **Continuity log:** recorded transitions, gaps, restarts, forks and provenance.
+
+A companion, an owner reconstruction and a fly simulation are distinct
+identities. Sharing a body or memory protocol does not merge them. Replacing
+weights or a backend may reset cognitive state; that transition must be visible.
+
+## Milestones, not inflated percentages
+
+1. **M0 — Contract and scope:** an embodied-only profile, event schema and replay tests.
+2. **M1 — Reliable observation:** explicit gaps, recovery, storage budget and separate motor safety acceptance.
+3. **M2 — 24 hours:** actual sustained operation, consolidation and next-day recall with sources.
+4. **M3 — 30 days:** temporal facts, tested portable recovery and base-model replacement without losing history.
+5. **M4 — Personalization:** evaluated snapshots and optional small adapters trained on separately consented, curated examples.
+
+None of these new end-to-end milestones is reported as passed yet.
+The private prototype has reusable capture, encrypted archive, consent and
+bounded-control components; raw recordings are not yet episodic memory.
+Hardware and software must be requalified for this new scope.
+
+Details: [roadmap](ROADMAP.md), [Mind ABI v0 proposal](MIND_ABI.md),
+[Fly Lab and primary sources](FLY_LAB.md).
+
+## Why a fly?
+
+Fly neuroscience offers accessible wiring data, executable neural models and
+embodied simulators. They are different layers, not one ready-made mind.
+Our first candidate experiment is visual attention in simulation, compared
+against a simple conventional controller. It is independent of the memory
+milestones. The [Fly Lab note](FLY_LAB.md) records limitations and licensing.
+
+A future human neural reconstruction, if sufficiently characterized and
+available, would still require a new scientific model, sensor/body mappings,
+state semantics and validation. A common API does not solve those problems.
+This project does **not** claim consciousness transfer, biological equivalence,
+literal immortality, or a faithful copy of a person.
+
+## User ownership and data boundaries
+
+Local inference and local private data are the default. Capture, retention,
+movement, speech, training and export are separate decisions. Collection does
+not authorize training or publication. Other people's recordings require
+appropriate consent and exclusion controls; a camera cannot infer consent.
+
+Memory keeps source links, uncertainty and correction history. Generated text
+is never silently promoted to a biographical fact. Deletion/withdrawal must
+propagate to derived indexes, summaries and affected training artifacts.
+Affected trained adapters must be disabled pending a reviewed replacement;
+deleting a source file does not erase its influence from model weights.
+
+The user must be able to pause observation, stop movement independently of the
+model, and save and exit with an explicit checkpoint or a visible error.
+Unbounded raw recording is not the storage strategy.
+
+## What is parked
+
+Desktop automation, browser journeys, coding agents, application launching and
+provider expansion are no longer release prerequisites. Existing work is
+preserved, not deleted. The new runtime profile must not expose those tools.
+
+## Publication and licensing status
+
+This is a public **concept repository**. It contains no private recordings,
+owner archive, credentials, identity dataset or trained personal model. The
+implementation remains private pending a scoped source release, privacy review,
+dependency review and an explicit license decision. Public visibility alone
+does not grant an open-source license; this update does not relicense code or
+third-party data. The previous concept remains in Git history.
+
+Independent research project; not affiliated with the neuroscience projects
+referenced here. Contributions to methodology and reproducible evaluations are
+welcome; please do not upload personal data to issues.
