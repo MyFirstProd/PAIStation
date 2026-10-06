@@ -8,6 +8,16 @@
 > research roadmap, not a production release. Computer control is parked.
 > The next target is a measured 24-hour embodied-memory demonstration.
 
+## Proposal (October 2026)
+
+The research and funding proposal **"The Digital Self"** — body, memory,
+time-sliced selves, legacy for descendants, and the fly-to-human research program:
+
+- English: [proposal/DIGITAL_SELF_PROPOSAL_EN.md](proposal/DIGITAL_SELF_PROPOSAL_EN.md) · [PDF](proposal/DIGITAL_SELF_PROPOSAL_EN.pdf)
+- Русский: [proposal/DIGITAL_SELF_PROPOSAL_RU.md](proposal/DIGITAL_SELF_PROPOSAL_RU.md) · [PDF](proposal/DIGITAL_SELF_PROPOSAL_RU.pdf)
+
+Author and sole developer: Alexander D. Budanov — it@alexbudanov.ru · Telegram @alexandr_budanov_it.
+
 ## The idea
 
 Build a system that can observe an explicitly permitted environment, keep a
