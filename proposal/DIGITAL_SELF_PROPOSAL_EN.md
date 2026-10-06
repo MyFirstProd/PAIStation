@@ -8,7 +8,7 @@
 
 **GitHub (public concept and this document):** https://github.com/MyFirstProd/PAIStation
 
-**Project channel:** https://t.me/error404_engineer_not_found
+**Author's channel (projects, hardware, work in progress):** https://t.me/error404_engineer_not_found
 
 **Document date:** October 6, 2026 · Version 1.0
 
@@ -71,6 +71,14 @@ numbers below come from the latest run.
 - Local owner recognition by face and voice; the result is always
   probabilistic and carries `verified: false` — recognition is **never** treated
   as proof of authorship or consent.
+- **Hands and keyboard.** The system already has a computer-control loop:
+  code, browser, Windows desktop. It works **with a mouse and keyboard the way
+  a human does** — sees the screen, moves the cursor, types — not through
+  hidden APIs; irreversible actions require confirmation. 13 of 20 acceptance
+  criteria for this loop are closed. In the memory profile the hands are
+  deliberately disabled so that memory is finished first; later the copy will
+  be able to work at a computer the way the owner did — with his sequence of
+  actions and his habits.
 
 **Memory**
 - Encrypted event archive (SQLite, Windows DPAPI): each event is an envelope
@@ -221,6 +229,7 @@ can be shown to families before the human copy matures.
 | 9–15 mo | "Digital pet" pilot in 3–5 families | The method transfers to another personality; first product |
 | 12–18 mo | Mind ABI hybrid (Stage B) and reaction transfer (Stage C) | What is preserved when the mechanism is replaced |
 | 18–24 mo | Copy pilot with 5–10 volunteers, legacy transfer charter, publications | Reproducibility, an ethical standard, a scientific result |
+| 18–24 mo | Return of the "hands": the copy works at a computer with mouse and keyboard under supervision, reproducing the owner's habits | Personality shows not only in words but in actions |
 
 ## 10. What it takes to do this well and production-grade
 
@@ -323,7 +332,7 @@ Alexander D. Budanov — founder and sole developer of the project.
 
 Email: it@alexbudanov.ru · Telegram @alexandr_budanov_it · phone on request
 
-GitHub: https://github.com/MyFirstProd/PAIStation · Work-in-progress channel: https://t.me/error404_engineer_not_found
+GitHub: https://github.com/MyFirstProd/PAIStation · Author's channel (projects, hardware, work in progress): https://t.me/error404_engineer_not_found
 
 *The working repository and technical reports are provided by the author on request under
 NDA; the owner's personal data, biometrics and voice are never shared under any
